@@ -1,5 +1,7 @@
 #pragma once
+#include "mapcells/mapcell.h"
 #include <map>
+#include <memory>
 
 namespace pv {
 
@@ -14,8 +16,12 @@ namespace pv {
 		Map(AsciiMapPointer asciiMapPointer);
 
 	private:
+		using MapCellHolder = std::unique_ptr<MapCell>;
+		MapCellHolder map_array_[MAP_ROWS_][MAP_COLUMNS_];
 
-		//static std::map<char, 
+		friend class Wall;
+
+		void RemoveDestroyedWall();
 	};
 
 }
