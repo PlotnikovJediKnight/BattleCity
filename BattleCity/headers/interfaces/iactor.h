@@ -9,6 +9,8 @@ namespace pv {
 		virtual void MoveForward() = 0;
 		virtual void SetOrientation() = 0;
 		virtual void Fire() = 0;
+
+		virtual ~IActor() = default;
 	};
 
 }
