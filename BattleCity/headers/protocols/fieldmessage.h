@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <string>
 #include <unordered_map>
+#include <map>
 #include <optional>
 #include <variant>
 #include <vector>
@@ -44,10 +45,36 @@ namespace pv {
 		std::string GetString(Fields) const;
 
 	private:
-		
+		using SupportedVariant = std::variant<std::string, int>;
+
 		bool FieldHasType(Fields, const std::string*) const;
 		bool FieldIsSet(Fields) const;
 		bool FieldIsPresentInEnum(Fields) const;
+
+		void AddNewField(Fields, int);
+		void AddNewField(Fields, const std::string&);
+
+		void RemoveField(std::map<Fields, SupportedVariant>::iterator, Fields);
+
+		void WriteMessageSize(std::stringstream&, size_t) const;
+		void WriteBitmask(std::stringstream&) const;
+		void WriteFieldsData(std::stringstream&) const;
+		void WriteField(std::stringstream&, int) const;
+		void WriteField(std::stringstream&, const std::string&) const;
+
+		int ReadMessageSize(std::stringstream&) const;
+		void SetMessageSize(int newMessageSize);
+
+		std::string ReadBitmask(std::stringstream&) const;
+		void SetDefaultFieldValues(const std::string&);
+		void ReadFieldValues(std::stringstream&, size_t&);
+
+		int ReadIntValue(std::stringstream&);
+		std::string ReadStringValue(std::stringstream&);
+
+
+		void ReadField(std::stringstream&, int&, size_t&);
+		void ReadField(std::stringstream&, std::string&, size_t&);
 
 		//supported field types
 		static inline const std::string string_type_name_{ "string" };
@@ -55,9 +82,7 @@ namespace pv {
 
 		//message field -> corresponding type
 		std::unordered_map<Fields, const std::string*> field_to_type_p_;
-
-		using SupportedVariant = std::variant<std::string, int>;
-		std::unordered_map<Fields, SupportedVariant> fields_;
+		std::map<Fields, SupportedVariant> fields_;
 
 		std::vector<FieldsUnderlyingType> enums_masks_;
 
